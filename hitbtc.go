@@ -118,6 +118,25 @@ func (b *HitBtc) GetTicker(market string) (ticker Ticker, err error) {
 }
 
 // Market
+// GetOrderBook is used to get the current market order book values for a market.
+func (b *HitBtc) GetOrderBook(market string, depth int) (orderBook OrderBook, err error) {
+	r, err := b.client.do("GET", "public/orderbook/"+strings.ToUpper(market), nil, false)
+	if err != nil {
+		return
+	}
+	var response interface{}
+	println("Response: ", string(r))
+	if err = json.Unmarshal(r, &response); err != nil {
+		return
+	}
+	if err = handleErr(response); err != nil {
+		return
+	}
+	err = json.Unmarshal(r, &orderBook)
+	orderBook.Asks = orderBook.Asks[:Min(len(orderBook.Asks), depth)]
+	orderBook.Bids = orderBook.Bids[:Min(len(orderBook.Bids), depth)]
+	return
+}
 
 // Account
 
@@ -220,4 +239,11 @@ func (b *HitBtc) GetTransactions(start uint64, end uint64, limit uint32) (transa
 	}
 	err = json.Unmarshal(r, &transactions)
 	return
+}
+
+func Min(x, y int) int {
+	if x < y {
+		return x
+	}
+	return y
 }
