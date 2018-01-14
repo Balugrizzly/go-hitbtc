@@ -241,6 +241,34 @@ func (b *HitBtc) GetTransactions(start uint64, end uint64, limit uint32) (transa
 	return
 }
 
+// CreateOrder is used to retrieve all balances from your account
+func (b *HitBtc) CreateOrder(pair string, amount float64, price float64, side string, orderType string) (order Order, err error) {
+	payload := make(map[string]string)
+	payload["symbol"] = pair
+	payload["side"] = side
+	payload["quantity"] = strconv.FormatFloat(amount, 'f', 6, 64)
+	if orderType != "market" {
+		payload["price"] = strconv.FormatFloat(price, 'f', 6, 64)
+	}
+	payload["type"] = orderType
+
+	payload["timeInForce"] = "IOC"
+
+	r, err := b.client.do("POST", "order", payload, true)
+	if err != nil {
+		return
+	}
+	var response interface{}
+	if err = json.Unmarshal(r, &response); err != nil {
+		return
+	}
+	if err = handleErr(response); err != nil {
+		return
+	}
+	err = json.Unmarshal(r, &order)
+	return order, nil
+}
+
 func Min(x, y int) int {
 	if x < y {
 		return x
