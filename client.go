@@ -126,12 +126,10 @@ func (c *client) do(method string, ressource string, payload map[string]string, 
 		if method == "POST" || method == "PUT" {
 			jsonString, err := json.Marshal(payload)
 			fmt.Println(err)
-			fmt.Println("FormData: " + string(jsonString))
 			formData = string(jsonString)
 		}
 	}
 
-	fmt.Println("FormData : " + formData)
 	req, err := http.NewRequest(method, rawurl, strings.NewReader(formData))
 	if err != nil {
 		return
