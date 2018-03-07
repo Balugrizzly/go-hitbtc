@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"encoding/json"
 	"strings"
 	"time"
 )
@@ -122,7 +123,13 @@ func (c *client) do(method string, ressource string, payload map[string]string, 
 			formValues.Set(key, value)
 		}
 		formData = formValues.Encode()
+		if method == "POST" || method == "PUT" {
+			jsonString, err := json.Marshal(payload)
+			fmt.Println(err)
+			formData = string(jsonString)
+		}
 	}
+
 	req, err := http.NewRequest(method, rawurl, strings.NewReader(formData))
 	if err != nil {
 		return
@@ -151,6 +158,7 @@ func (c *client) do(method string, ressource string, payload map[string]string, 
 	}
 	if resp.StatusCode != 200 && resp.StatusCode != 401 {
 	//if resp.StatusCode != 200 {
+		fmt.Println("Error : " + string(response))
 		err = errors.New(resp.Status)
 	}
 	return response, err
