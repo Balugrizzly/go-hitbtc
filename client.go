@@ -1,6 +1,7 @@
 package hitbtc
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -8,7 +9,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"encoding/json"
 	"strings"
 	"time"
 )
@@ -125,7 +125,9 @@ func (c *client) do(method string, ressource string, payload map[string]string, 
 		formData = formValues.Encode()
 		if method == "POST" || method == "PUT" {
 			jsonString, err := json.Marshal(payload)
-			fmt.Println(err)
+			if err != nil {
+				fmt.Println(err)
+			}
 			formData = string(jsonString)
 		}
 	}
@@ -160,7 +162,7 @@ func (c *client) do(method string, ressource string, payload map[string]string, 
 		return response, err
 	}
 	if resp.StatusCode != 200 && resp.StatusCode != 401 {
-	//if resp.StatusCode != 200 {
+		//if resp.StatusCode != 200 {
 		fmt.Println("Error : " + string(response))
 		err = errors.New(resp.Status)
 	}
