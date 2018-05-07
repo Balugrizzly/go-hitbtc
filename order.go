@@ -1,57 +1,39 @@
 package hitbtc
 
 import (
-    "encoding/json"
-    "time"
+	"encoding/json"
 )
 
 type Order struct {
-    ClientOrderId string    `json:"clientOrderId"`
-    Symbol        string    `json:"symbol"`
-    Side          string    `json:"side"`
-    Status        string    `json:"status"`
-    Type          string    `json:"type"`
-    TimeInForce   string    `json:"timeInForce"`
-    Quantity      float64   `json:"quantity,string"`
-    Price         float64   `json:"price,string"`
-    CumQuantity   float64   `json:"cumQuantity,string"`
-    Created       time.Time `json:"createdAt"`
-    Updated       time.Time `json:"updatedAt"`
-    StopPrice     float64   `json:"stopPrice,string"`
-    Expire        time.Time `json:"expireTime"`
+	Id            uint64    `json:"id"`
+	//OrderId       uint64    `json:"orderId"`
+	ClientOrderId string    `json:"clientOrderId"`
+	Symbol        string    `json:"symbol"`
+	Type          string    `json:"type"`
+	Side          string    `json:"side"`
+	Price         float64   `json:"price,string"`
+	Quantity      float64   `json:"quantity,string"`
+	CumQuantity      float64   `json:"cumQuantity,string"`
+	CreatedAt           string   `json:"createdAt"`
+	UpdatedAt           string   `json:"updatedAt"`
+	//Timestamp     time.Time `json:"timestamp"`
 }
 
 func (t *Order) UnmarshalJSON(data []byte) error {
-    var err error
-    type Alias Order
-    aux := &struct {
-        Created string `json:"createdAt"`
-        Updated string `json:"updatedAt"`
-        Expire  string `json:"expireTime"`
-        *Alias
-    }{
-        Alias: (*Alias)(t),
-    }
-    if err = json.Unmarshal(data, &aux); err != nil {
-        return err
-    }
-    if aux.Created != "" {
-        t.Created, err = time.Parse("2006-01-02T15:04:05.999Z", aux.Created)
-        if err != nil {
-            return err
-        }
-    }
-    if aux.Updated != "" {
-        t.Updated, err = time.Parse("2006-01-02T15:04:05.999Z", aux.Updated)
-        if err != nil {
-            return err
-        }
-    }
-    if aux.Expire != "" {
-        t.Expire, err = time.Parse("2006-01-02T15:04:05.999Z", aux.Expire)
-        if err != nil {
-            return err
-        }
-    }
-    return nil
+	var err error
+	type Alias Order
+	aux := &struct {
+		//Timestamp string `json:"timestamp"`
+		*Alias
+	}{
+		Alias: (*Alias)(t),
+	}
+	if err = json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	//t.Timestamp, err = time.Parse("2006-01-02T15:04:05.999Z", aux.Timestamp)
+	//if err != nil {
+	//	return err
+	//}
+	return nil
 }
