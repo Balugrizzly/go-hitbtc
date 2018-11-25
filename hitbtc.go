@@ -252,7 +252,7 @@ func (b *HitBtc) CreateOrder(pair string, amount float64, price float64, side st
 	}
 	payload["type"] = orderType
 
-	payload["timeInForce"] = "IOC"
+	payload["timeInForce"] = "GTC"
 
 	r, err := b.client.do("POST", "order", payload, true)
 	if err != nil {
